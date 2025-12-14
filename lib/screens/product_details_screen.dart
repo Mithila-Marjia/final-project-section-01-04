@@ -130,7 +130,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              final appProvider = Provider.of<AppProvider>(
+                                context,
+                                listen: false,
+                              );
+                              appProvider.addToCart(product!);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${product!['name']} added to cart',
+                                  ),
+                                  backgroundColor: Colors.green,
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue.shade700,
                               foregroundColor: Colors.white,

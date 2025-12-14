@@ -75,6 +75,104 @@ class AppProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> cartItems = [];
 
+  void addToCart(Map<String, dynamic> product) {
+    // Check if product already exists in cart
+    final existingIndex = cartItems.indexWhere(
+      (item) => item['id'] == product['id'],
+    );
+    if (existingIndex != -1) {
+      // Increase quantity if already in cart
+      cartItems[existingIndex]['quantity'] =
+          (cartItems[existingIndex]['quantity'] ?? 1) + 1;
+    } else {
+      // Add new item with quantity 1
+      cartItems.add({...product, 'quantity': 1});
+    }
+    notifyListeners();
+  }
+
+  void increaseQuantity(int index) {
+    if (index < cartItems.length) {
+      cartItems[index]['quantity'] = (cartItems[index]['quantity'] ?? 1) + 1;
+      notifyListeners();
+    }
+  }
+
+  void decreaseQuantity(int index) {
+    if (index < cartItems.length) {
+      final currentQuantity = cartItems[index]['quantity'] ?? 1;
+      if (currentQuantity > 1) {
+        cartItems[index]['quantity'] = currentQuantity - 1;
+      } else {
+        cartItems.removeAt(index);
+      }
+      notifyListeners();
+    }
+  }
+
+  void removeFromCart(int index) {
+    if (index < cartItems.length) {
+      cartItems.removeAt(index);
+      notifyListeners();
+    }
+  }
+
+  double get totalPrice {
+    double total = 0;
+    for (var item in cartItems) {
+      final quantity = item['quantity'] ?? 1;
+      final price = item['price'] ?? 0.0;
+      total += price * quantity;
+    }
+    return total;
+  }
+
+  Future<bool> placeOrder({
+    required String customerName,
+    required String customerPhone,
+    required String customerAddress,
+  }) async {
+    try {
+      if (cartItems.isEmpty) {
+        return false;
+      }
+
+      final orderId = DateTime.now().millisecondsSinceEpoch.toString();
+      final orderData = {
+        'orderId': orderId,
+        'items': cartItems
+            .map(
+              (item) => {
+                'id': item['id'],
+                'name': item['name'],
+                'price': item['price'],
+                'image': item['image'],
+                'quantity': item['quantity'] ?? 1,
+              },
+            )
+            .toList(),
+        'total': totalPrice,
+        'date': FieldValue.serverTimestamp(),
+        'status': 'pending',
+        'customerName': customerName,
+        'customerPhone': customerPhone,
+        'customerAddress': customerAddress,
+      };
+
+      await FirebaseService.firestore
+          .collection('orders')
+          .doc(orderId)
+          .set(orderData);
+
+      cartItems.clear();
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Stream<QuerySnapshot> getOrdersByPhoneStream(String phoneNumber) {
     return FirebaseService.firestore
         .collection('orders')

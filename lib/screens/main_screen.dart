@@ -1,3 +1,4 @@
+import 'package:ecom/screens/cart_screen.dart';
 import 'package:ecom/screens/orders_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +14,7 @@ class MainScreen extends StatelessWidget {
       builder: (context, appProvider, child) {
         List<Widget> screens = [
           const HomeScreen(),
-          const Text("Cart"),
+          const CartScreen(),
           const OrdersScreen(),
         ];
 
