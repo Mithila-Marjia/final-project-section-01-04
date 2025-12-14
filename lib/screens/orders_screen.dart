@@ -177,7 +177,37 @@ class _OrdersScreenState extends State<OrdersScreen> {
                                 color: Colors.grey.shade600,
                               ),
                             ),
-                            const SizedBox(height: 5),
+                            const SizedBox(height: 10),
+                            // Display individual items
+                            if (order['items'] != null &&
+                                (order['items'] as List).isNotEmpty)
+                              ...((order['items'] as List).map((item) {
+                                final itemData = item as Map<String, dynamic>;
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '• ${itemData['name'] ?? 'N/A'}',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                      Text(
+                                        'Qty: ${itemData['quantity'] ?? 1}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey.shade700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList()),
+                            const SizedBox(height: 10),
                             Text(
                               'Total: ৳${(order['total'] ?? 0.0).toStringAsFixed(2)}',
                               style: TextStyle(
