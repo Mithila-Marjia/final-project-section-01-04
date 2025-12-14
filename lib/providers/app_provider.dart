@@ -49,5 +49,36 @@ class AppProvider with ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>?> getProductDetails(String productId) async {
+    try {
+      final doc = await FirebaseService.firestore
+          .collection('products')
+          .doc(productId)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          'name': data['name'] ?? '',
+          'price': (data['price'] ?? 0).toDouble(),
+          'image': data['image'] ?? '',
+          'category': data['category'] ?? '',
+          'description': data['description'] ?? '',
+        };
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   List<Map<String, dynamic>> cartItems = [];
+
+  Stream<QuerySnapshot> getOrdersByPhoneStream(String phoneNumber) {
+    return FirebaseService.firestore
+        .collection('orders')
+        .where('customerPhone', isEqualTo: phoneNumber)
+        .snapshots();
+  }
 }

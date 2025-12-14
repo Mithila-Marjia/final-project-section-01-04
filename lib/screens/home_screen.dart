@@ -1,3 +1,4 @@
+import 'package:ecom/screens/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -100,7 +101,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             final product = appProvider.products[index];
                             return InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProductDetailsScreen(
+                                      productId: product['id'],
+                                    ),
+                                  ),
+                                );
+                              },
                               borderRadius: BorderRadius.circular(15),
                               child: Card(
                                 elevation: 3,
